@@ -7,7 +7,7 @@ const clientSchema = new mongoose.Schema({
   email: { type: String, match: [/.+\@.+\..+/], required: true, unique: true },
   passe: { type: String, required: true },
   cree: { type: Date, default: Date.now },
-  panier: { type: Object, default: [] }
+  panier: { type: Array, default: Array }
 });
 
 clientSchema.methods.generateHash = passe =>

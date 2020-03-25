@@ -15,10 +15,28 @@ const verifcationJWT = (request, response, next) => {
   }
 };
 
-router.post("/panier", verifcationJWT, (request, response) => {
+router.post("/majpanier", verifcationJWT, (request, response) => {
   jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);
-    else response.send("approved " + JSON.stringify(data));
+    else {
+      const id = data._id;
+      const localData = request.body;
+      Client.findOne({ _id: id }, { _id: 0, panier: 1 })
+        .then(client => {
+          if (!client.panier.length) {
+            localData.map(async element => {
+              await Client.updateOne(
+                { _id: id },
+                { $push: { panier: element } }
+              );
+              response.send("updated");
+            });
+          } else {
+            response.send(client);
+          }
+        })
+        .catch(erreur => response.json(erreur));
+    }
   });
 });
 
