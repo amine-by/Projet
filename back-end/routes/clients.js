@@ -2,6 +2,7 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Client = require("../models/client.model");
+const Article = require("../models/article.model");
 
 const verifcationJWT = (request, response, next) => {
   const bearerHeader = request.headers["authorization"];
@@ -23,17 +24,39 @@ router.post("/majpanier", verifcationJWT, (request, response) => {
       const localData = request.body;
       Client.findOne({ _id: id }, { _id: 0, panier: 1 })
         .then(client => {
-          if (!client.panier.length) {
-            localData.map(async element => {
-              await Client.updateOne(
-                { _id: id },
-                { $push: { panier: element } }
-              );
-              response.send("updated");
-            });
-          } else {
-            response.send(client);
-          }
+          localData.map(async element => {
+            const existeData = await client.panier.find(
+              e => element._id === e._id
+            );
+            const article = await Article.findOne(
+              { _id: element._id },
+              { _id: 0, quantite: 1 }
+            );
+            if (existeData) {
+              if (existeData.quantite + element.quantite >= article.quantite) {
+                console.log("superieur ou egale")
+              } else {
+                console.log("inferieur")
+              }
+            } else {
+              if (element.quantite <= article.quantite) {
+                await Client.updateOne(
+                  { _id: id },
+                  { $push: { panier: element } }
+                );
+              } else {
+                await Client.updateOne(
+                  { _id: id },
+                  {
+                    $push: {
+                      panier: { _id: element._id, quantite: article.quantite }
+                    }
+                  }
+                );
+              }
+            }
+          });
+          response.send("panier mis à jour");
         })
         .catch(erreur => response.json(erreur));
     }
