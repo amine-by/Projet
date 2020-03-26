@@ -34,9 +34,15 @@ router.post("/majpanier", verifcationJWT, (request, response) => {
             );
             if (existeData) {
               if (existeData.quantite + element.quantite >= article.quantite) {
-                console.log("superieur ou egale")
+                await Client.updateOne(
+                  { _id: id, "panier._id": element._id },
+                  { $set: { "panier.$.quantite": article.quantite } }
+                );
               } else {
-                console.log("inferieur")
+                await Client.updateOne(
+                  { _id: id, "panier._id": element._id },
+                  { $inc: { "panier.$.quantite": element.quantite } }
+                );
               }
             } else {
               if (element.quantite <= article.quantite) {
