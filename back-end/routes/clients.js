@@ -16,8 +16,8 @@ const verifcationJWT = (request, response, next) => {
   }
 };
 
-router.post("/majpanier", verifcationJWT, (request, response) => {
-  jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
+router.post("/majpanier", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);
     else {
       const id = data._id;

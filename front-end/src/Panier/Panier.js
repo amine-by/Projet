@@ -6,23 +6,8 @@ import {
   Card,
   CardContent
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
-
-const useStyles = makeStyles({
-  root: {
-    minWidth: 275
-  },
-  title: {
-    fontSize: 14
-  },
-  pos: {
-    marginBottom: 12
-  }
-});
 
 export default function Panier() {
-  const classes = useStyles();
 
   useEffect(() => {}, []);
   const handleSubmit = event => {
