@@ -50,27 +50,37 @@ export default function Article() {
         setAlert("");
       }, 5000);
     } else {
-      if (localStorage.getItem("cart-cookie")) {
-        const array = JSON.parse(localStorage.getItem("cart-cookie"));
-        let i = 0;
-        let c = false;
-        while (i !== array.length && c === false) {
-          if (array[i]._id === data._id) {
-            array[i].quantite += parseInt(quantite);
-            c = true;
-          } else {
-            i++;
-          }
-        }
-        if (i === array.length) {
-          array.push({ _id: data._id, quantite: parseInt(quantite) });
-        }
-
-        localStorage.setItem("cart-cookie", JSON.stringify(array));
-      } else {
+      if (localStorage.getItem("jwt-cookie")) {
         const array = [];
         array.push({ _id: data._id, quantite: parseInt(quantite) });
-        localStorage.setItem("cart-cookie", JSON.stringify(array));
+        axios.post("http://localhost:4000/clients/majpanier", array, {
+          headers: {
+            Authorization: "bearer " + localStorage.getItem("jwt-cookie")
+          }
+        });
+      } else {
+        if (localStorage.getItem("cart-cookie")) {
+          const array = JSON.parse(localStorage.getItem("cart-cookie"));
+          let i = 0;
+          let c = false;
+          while (i !== array.length && c === false) {
+            if (array[i]._id === data._id) {
+              array[i].quantite += parseInt(quantite);
+              c = true;
+            } else {
+              i++;
+            }
+          }
+          if (i === array.length) {
+            array.push({ _id: data._id, quantite: parseInt(quantite) });
+          }
+
+          localStorage.setItem("cart-cookie", JSON.stringify(array));
+        } else {
+          const array = [];
+          array.push({ _id: data._id, quantite: parseInt(quantite) });
+          localStorage.setItem("cart-cookie", JSON.stringify(array));
+        }
       }
       window.location = "/Panier";
     }
