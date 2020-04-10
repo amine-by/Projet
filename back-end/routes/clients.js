@@ -16,6 +16,17 @@ const verifcationJWT = (request, response, next) => {
   }
 };
 
+router.post("/getpanier", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      Client.findOne({ _id: data._id }, { _id: 0, panier: 1 }).then(resultat =>
+        response.send(resultat.panier)
+      );
+    }
+  });
+});
+
 router.post("/majpanier", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);

@@ -1,16 +1,47 @@
-import React, { useEffect } from "react";
-import {
-  Container,
-  Button,
-  CardActions,
-  Card,
-  CardContent
-} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Container, Button, Typography, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
+
+const useStyles = makeStyles((theme) => ({
+  form: {
+    padding: theme.spacing(3),
+  },
+}));
 
 export default function Panier() {
+  const classes = useStyles();
+  const [items, setItems] = useState([]);
+  useEffect(() => {
+    axios
+      .post(
+        "http://localhost:4000/clients/getpanier",
+        {},
+        {
+          headers: {
+            Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+          },
+        }
+      )
+      .then((resultat) => {
+        resultat.data.forEach((d) => {
+          axios
+            .get("http://localhost:4000/articles/recherche/" + d._id)
+            .then((resultat) =>
+              setItems((items) => [
+                ...items,
+                {
+                  nom: resultat.data.nom,
+                  quantite: d.quantite,
+                  prix: resultat.data.prix,
+                },
+              ])
+            );
+        });
+      });
+  }, []);
 
-  useEffect(() => {}, []);
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (!localStorage.getItem("jwt-cookie")) {
       window.location = "/Connexion";
@@ -19,16 +50,21 @@ export default function Panier() {
 
   return (
     <Container component="main">
-      <form onSubmit={handleSubmit} noValidate>
-        <Card>
-          <CardContent></CardContent>
-          <CardActions>
-            <Button size="small">Supprimer</Button>
-          </CardActions>
-        </Card>
-        <Button variant="contained" color="primary" type="submit">
-          Commander
-        </Button>
+      <form onSubmit={handleSubmit} noValidate className={classes.form}>
+        <Grid container spacing={1} direction="column">
+          {items.map((item) => (
+            <Grid item xs={12} spacing={3}>
+              <Typography>{item.nom}</Typography>
+              <Typography>{item.quantite}</Typography>
+              <Typography>{item.prix}DT</Typography>
+            </Grid>
+          ))}
+          <Grid item spacing={3}>
+            <Button variant="contained" color="primary" type="submit">
+              Commander
+            </Button>
+          </Grid>
+        </Grid>
       </form>
     </Container>
   );
