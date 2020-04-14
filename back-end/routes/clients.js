@@ -16,13 +16,26 @@ const verifcationJWT = (request, response, next) => {
   }
 };
 
+router.post("/supprimerpanier", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      Client.updateOne(
+        { _id: data._id },
+        { $pull: { panier: { _id: request.body._id } } }
+      ).then(() => response.send("supprimé"))
+    }
+  });
+});
+
 router.post("/getpanier", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);
     else {
-      Client.findOne({ _id: data._id }, { _id: 0, panier: 1 }).then(resultat =>
-        response.send(resultat.panier)
-      );
+      Client.findOne(
+        { _id: data._id },
+        { _id: 0, panier: 1 }
+      ).then((resultat) => response.send(resultat.panier));
     }
   });
 });
@@ -34,10 +47,10 @@ router.post("/majpanier", verifcationJWT, async (request, response) => {
       const id = data._id;
       const localData = request.body;
       Client.findOne({ _id: id }, { _id: 0, panier: 1 })
-        .then(client => {
-          localData.map(async element => {
+        .then((client) => {
+          localData.map(async (element) => {
             const existeData = await client.panier.find(
-              e => element._id === e._id
+              (e) => element._id === e._id
             );
             const article = await Article.findOne(
               { _id: element._id },
@@ -66,8 +79,8 @@ router.post("/majpanier", verifcationJWT, async (request, response) => {
                   { _id: id },
                   {
                     $push: {
-                      panier: { _id: element._id, quantite: article.quantite }
-                    }
+                      panier: { _id: element._id, quantite: article.quantite },
+                    },
                   }
                 );
               }
@@ -75,7 +88,7 @@ router.post("/majpanier", verifcationJWT, async (request, response) => {
           });
           response.send("panier mis à jour");
         })
-        .catch(erreur => response.json(erreur));
+        .catch((erreur) => response.json(erreur));
     }
   });
 });
@@ -104,7 +117,7 @@ router.route("/ajouter").post((request, response) => {
   const newClient = new Client({
     nom,
     prenom,
-    email
+    email,
   });
 
   newClient.passe = newClient.generateHash(passe);
@@ -112,7 +125,7 @@ router.route("/ajouter").post((request, response) => {
   newClient
     .save()
     .then(() => response.json("Client ajouté"))
-    .catch(erreur => response.json("Erreur " + erreur));
+    .catch((erreur) => response.json("Erreur " + erreur));
 });
 
 module.exports = router;

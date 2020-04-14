@@ -22,6 +22,28 @@ const useStyles = makeStyles((theme) => ({
 export default function Panier() {
   const classes = useStyles();
   const [items, setItems] = useState([]);
+  const supprimerItem = (_id) => {
+    if (localStorage.getItem("jwt-cookie")) {
+      axios
+        .post(
+          "http://localhost:4000/clients/supprimerpanier",
+          { _id },
+          {
+            headers: {
+              Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+            },
+          }
+        )
+        .then(() => setItems(items.filter((item) => item._id !== _id)));
+    }
+    if (localStorage.getItem("cart-cookie")) {
+      let data = JSON.parse(localStorage.getItem("cart-cookie"));
+      data = data.filter((d) => _id !== d._id);
+      if (data.length === 0) localStorage.removeItem("cart-cookie");
+      else localStorage.setItem("cart-cookie", JSON.stringify(data));
+      setItems(items.filter((item) => item._id !== _id));
+    }
+  };
   const panierVide = () => {
     return (
       <Paper className={classes.paper}>
@@ -32,17 +54,22 @@ export default function Panier() {
   const affichage = () => {
     return (
       <Grid container spacing={1} direction="column">
-        {items.map(i => (
-          <Grid item >
+        {items.map((i) => (
+          <Grid item>
             <Paper className={classes.paper}>
               <Typography>{i.nom}</Typography>
               <Typography>{i.quantite}</Typography>
               <Typography>{i.prix}DT</Typography>
-              <Button className={classes.expand}>Supprimer</Button>
+              <Button
+                onClick={() => supprimerItem(i._id)}
+                className={classes.expand}
+              >
+                Supprimer
+              </Button>
             </Paper>
           </Grid>
         ))}
-        <Grid className={classes.actions} item >
+        <Grid className={classes.actions} item>
           <Button
             variant="contained"
             color="primary"
@@ -75,6 +102,7 @@ export default function Panier() {
                 setItems((items) => [
                   ...items,
                   {
+                    _id: d._id,
                     nom: resultat.data.nom,
                     quantite: d.quantite,
                     prix: resultat.data.prix,
@@ -85,13 +113,14 @@ export default function Panier() {
         });
     } else if (localStorage.getItem("cart-cookie")) {
       const resultat = JSON.parse(localStorage.getItem("cart-cookie"));
-      resultat.forEach(d => {
+      resultat.forEach((d) => {
         axios
           .get("http://localhost:4000/articles/recherche/" + d._id)
           .then((resultat) =>
             setItems((items) => [
               ...items,
               {
+                _id: d._id,
                 nom: resultat.data.nom,
                 quantite: d.quantite,
                 prix: resultat.data.prix,

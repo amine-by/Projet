@@ -1,36 +1,34 @@
 import React from "react";
-import {
-  makeStyles
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   ClickAwayListener,
   Grow,
   Paper,
   Popper,
   MenuItem,
-  MenuList
+  MenuList,
 } from "@material-ui/core";
-import { AppBar, Toolbar, Button, Typography } from "@material-ui/core";
+import { AppBar, Toolbar, Button } from "@material-ui/core";
 import {
   HomeRounded,
   ShoppingCartRounded,
-  AccountCircleRounded
+  AccountCircleRounded,
+  DashboardRounded,
 } from "@material-ui/icons";
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   paper: {
-    marginRight: theme.spacing(2)
-  }
+    marginRight: theme.spacing(2),
+  },
 }));
 
 export default function NavBar(props) {
@@ -40,9 +38,9 @@ export default function NavBar(props) {
   const anchorRef = React.useRef(null);
 
   const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen);
+    setOpen((prevOpen) => !prevOpen);
   };
-  const handleClose = event => {
+  const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
@@ -126,64 +124,71 @@ export default function NavBar(props) {
   );
 
   return (
-      <div className={classes.root}>
-        <AppBar position="static" color="primary">
-          <Toolbar>
-            <Typography className={classes.title} color="inherit">
-              Logo
-            </Typography>
-            <Button
-              onClick={() => {
-                window.location = "/";
-              }}
-              color="inherit"
-            >
-              <HomeRounded />
-            </Button>
-            <div>
-              <Button
-                ref={anchorRef}
-                aria-controls={open ? "menu-list-grow" : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-                color="inherit"
+    <div className={classes.root}>
+      <AppBar position="static" color="primary">
+        <Toolbar>
+          <Button
+            onClick={() => {
+              window.location = "/";
+            }}
+            color="inherit"
+          >
+            BNB Booking
+          </Button>
+          <div className={classes.title}></div>
+          <Button
+            onClick={() => {
+              window.location = "/";
+            }}
+            color="inherit"
+          >
+            <HomeRounded />
+          </Button>
+          <Button color="inherit">
+            <DashboardRounded />
+          </Button>
+          <Button
+            ref={anchorRef}
+            aria-controls={open ? "menu-list-grow" : undefined}
+            aria-haspopup="true"
+            onClick={handleToggle}
+            color="inherit"
+          >
+            <AccountCircleRounded />
+          </Button>
+          <Popper
+            open={open}
+            anchorEl={anchorRef.current}
+            role={undefined}
+            transition
+            disablePortal
+          >
+            {({ TransitionProps, placement }) => (
+              <Grow
+                {...TransitionProps}
+                style={{
+                  transformOrigin:
+                    placement === "bottom" ? "center top" : "center bottom",
+                }}
               >
-                <AccountCircleRounded />
-              </Button>
-              <Popper
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                transition
-                disablePortal
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    style={{
-                      transformOrigin:
-                        placement === "bottom" ? "center top" : "center bottom"
-                    }}
-                  >
-                    <Paper>
-                      <ClickAwayListener onClickAway={handleClose}>
-                        {Auth ? clientLinks : visiteurLinks}
-                      </ClickAwayListener>
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </div>
-            <Button
-              onClick={() => {
-                window.location = "/Panier";
-              }}
-              color="inherit"
-            >
-              <ShoppingCartRounded />
-            </Button>
-          </Toolbar>
-        </AppBar>
-      </div>
+                <Paper>
+                  <ClickAwayListener onClickAway={handleClose}>
+                    {Auth ? clientLinks : visiteurLinks}
+                  </ClickAwayListener>
+                </Paper>
+              </Grow>
+            )}
+          </Popper>
+          <Button
+            onClick={() => {
+              window.location = "/Panier";
+            }}
+            color="inherit"
+          >
+            <ShoppingCartRounded />
+          </Button>
+        </Toolbar>
+      </AppBar>
+    </div>
   );
 }
