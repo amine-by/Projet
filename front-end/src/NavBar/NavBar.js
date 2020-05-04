@@ -124,7 +124,7 @@ export default function NavBar(props) {
             edge="start"
             className={clsx(
               props.classes.menuButton,
-              open && props.classes.hide
+              props.open && props.classes.hide
             )}
           >
             <MenuRounded />
