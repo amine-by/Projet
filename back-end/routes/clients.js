@@ -16,6 +16,18 @@ const verifcationJWT = (request, response, next) => {
   }
 };
 
+router.post("/estmoderateur", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      Client.findOne(
+        { _id: data._id },
+        { _id: 0, moderateur: 1 }
+      ).then((resultat) => response.send(resultat.moderateur));
+    }
+  });
+});
+
 router.post("/supprimerpanier", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);
@@ -23,7 +35,7 @@ router.post("/supprimerpanier", verifcationJWT, async (request, response) => {
       Client.updateOne(
         { _id: data._id },
         { $pull: { panier: { _id: request.body._id } } }
-      ).then(() => response.send("supprimé"))
+      ).then(() => response.send("supprimé"));
     }
   });
 });

@@ -1,43 +1,105 @@
-import React from "react";
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { indigo } from "@material-ui/core/colors";
-import ClientRoute from "./ClientRoute/ClientRoute";
-import VisiteurRoute from "./VisiteurRoute/VisiteurRoute";
+import React, { useState } from "react";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { BrowserRouter as Router } from "react-router-dom";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import NavBar from "./NavBar/NavBar";
-import Historique from "./Historique/Historique";
-import Compte from "./Compte/Compte";
-import Acceuil from "./Acceuil/Acceuil";
-import Inscription from "./Inscription/Inscription";
-import Connexion from "./Connexion/Connexion";
-import Panier from "./Panier/Panier";
-import Article from "./Article/Article";
-import Erreur from "./Erreur/Erreur";
+import SideBar from "./SideBar/SideBar";
+import Layout from "./Layout/Layout";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: indigo[500]
-    }
-  }
-});
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  appBar: {
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  hide: {
+    display: "none",
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end",
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  contentShift: {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: drawerWidth,
+  },
+  title: {
+    flexGrow: 1,
+  },
+  paper: {
+    marginRight: theme.spacing(2),
+  },
+}));
 
 export default function App() {
+  const classes = useStyles();
+  const theme = useTheme();
+  const [open, setOpen] = useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
   return (
-    <MuiThemeProvider theme={theme}>
+    <div className={classes.root}>
+      <CssBaseline />
       <Router>
-        <NavBar />
-        <Switch>
-          <Route exact path="/" component={Acceuil} />
-          <ClientRoute path="/Historique" component={Historique} />
-          <ClientRoute path="/Compte" component={Compte} />
-          <VisiteurRoute path="/Inscription" component={Inscription} />
-          <VisiteurRoute path="/Connexion" component={Connexion} />
-          <Route path="/Panier" component={Panier} />
-          <Route path="/Article/:id" component={Article} />
-          <Route path="*" component={Erreur} />
-        </Switch>
+        <NavBar
+          classes={classes}
+          theme={theme}
+          open={open}
+          handleDrawerOpen={handleDrawerOpen}
+        />
+        <SideBar
+          classes={classes}
+          theme={theme}
+          open={open}
+          handleDrawerClose={handleDrawerClose}
+        />
+        <Layout classes={classes} theme={theme} open={open} />
       </Router>
-    </MuiThemeProvider>
+    </div>
   );
 }

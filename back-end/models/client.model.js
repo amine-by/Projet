@@ -7,10 +7,12 @@ const clientSchema = new mongoose.Schema({
   email: { type: String, match: [/.+\@.+\..+/], required: true, unique: true },
   passe: { type: String, required: true },
   cree: { type: Date, default: Date.now },
-  panier: { type: Array, default: Array }
+  panier: { type: Array, default: Array },
+  moderateur: { type: Boolean, default: false },
+  administrateur: { type: Boolean, default: false }
 });
 
-clientSchema.methods.generateHash = passe =>
+clientSchema.methods.generateHash = (passe) =>
   bcrypt.hashSync(passe, bcrypt.genSaltSync(9));
 
 const Client = mongoose.model("Client", clientSchema);

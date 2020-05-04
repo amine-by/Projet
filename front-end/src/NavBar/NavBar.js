@@ -1,5 +1,5 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useEffect, useRef } from "react";
+import clsx from "clsx"
 import {
   ClickAwayListener,
   Grow,
@@ -8,34 +8,18 @@ import {
   MenuItem,
   MenuList,
 } from "@material-ui/core";
-import { AppBar, Toolbar, Button } from "@material-ui/core";
+import { AppBar, Toolbar, Button, IconButton } from "@material-ui/core";
 import {
   HomeRounded,
   ShoppingCartRounded,
   AccountCircleRounded,
-  DashboardRounded,
+  MenuRounded,
 } from "@material-ui/icons";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-  paper: {
-    marginRight: theme.spacing(2),
-  },
-}));
-
 export default function NavBar(props) {
-  const classes = useStyles();
   const Auth = localStorage.getItem("jwt-cookie");
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef(null);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -53,14 +37,15 @@ export default function NavBar(props) {
       setOpen(false);
     }
   }
-  const prevOpen = React.useRef(open);
-  React.useEffect(() => {
+  const prevOpen = useRef(open);
+  useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
 
     prevOpen.current = open;
   }, [open]);
+
   const clientLinks = (
     <MenuList
       autoFocusItem={open}
@@ -124,9 +109,26 @@ export default function NavBar(props) {
   );
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static" color="primary">
+    <div className={props.classes.root}>
+      <AppBar
+        position="static"
+        className={clsx(props.classes.appBar, {
+          [props.classes.appBarShift]: props.open,
+        })}
+      >
         <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={props.handleDrawerOpen}
+            edge="start"
+            className={clsx(
+              props.classes.menuButton,
+              open && props.classes.hide
+            )}
+          >
+            <MenuRounded />
+          </IconButton>
           <Button
             onClick={() => {
               window.location = "/";
@@ -135,7 +137,7 @@ export default function NavBar(props) {
           >
             BNB Booking
           </Button>
-          <div className={classes.title}></div>
+          <div className={props.classes.title}></div>
           <Button
             onClick={() => {
               window.location = "/";
@@ -143,9 +145,6 @@ export default function NavBar(props) {
             color="inherit"
           >
             <HomeRounded />
-          </Button>
-          <Button color="inherit">
-            <DashboardRounded />
           </Button>
           <Button
             ref={anchorRef}
