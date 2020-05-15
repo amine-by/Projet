@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { BrowserRouter as Router } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import axios from "axios";
 import NavBar from "./NavBar/NavBar";
 import SideBar from "./SideBar/SideBar";
 import Layout from "./Layout/Layout";
@@ -73,7 +74,24 @@ const useStyles = makeStyles((theme) => ({
 export default function App() {
   const classes = useStyles();
   const theme = useTheme();
+  const [mod, setMod] = useState(false);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    axios
+      .post(
+        "http://localhost:4000/clients/estmoderateur",
+        {},
+        {
+          headers: {
+            Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+          },
+        }
+      )
+      .then((resultat) => {
+        setMod(resultat.data);
+      });
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -90,6 +108,7 @@ export default function App() {
           classes={classes}
           theme={theme}
           open={open}
+          mod={mod}
           handleDrawerOpen={handleDrawerOpen}
         />
         <SideBar

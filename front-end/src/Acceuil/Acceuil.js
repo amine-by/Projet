@@ -10,13 +10,13 @@ import {
   FormLabel,
   FormControl,
   GridList,
-  Box,
+  Paper,
   Link
 } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
-    margin: theme.spacing(3)
+    margin: theme.spacing(3,3,3,1)
   },
   Box: {
     margin: theme.spacing(1),
@@ -84,10 +84,7 @@ export default function Acceuil() {
       <Grid item className={classes.formControl} xs={true}>
         <GridList cols={false}>
           {data.map(d => (
-            <Box
-              borderColor="grey.500"
-              borderRadius="2%"
-              border={1}
+            <Paper
               className={classes.Box}
             >
               <Typography className={classes.Text} noWrap="true">
@@ -101,7 +98,7 @@ export default function Acceuil() {
               >
                 {d.prix} DT
               </Typography>
-            </Box>
+            </Paper>
           ))}
         </GridList>
       </Grid>

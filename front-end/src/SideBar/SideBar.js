@@ -37,17 +37,29 @@ export default function SideBar(props) {
       </div>
       <Divider />
       <List>
-        <ListItem button key="Clients">
+        <ListItem
+          button
+          key="Clients"
+          onClick={() => {
+            window.location = "/Clients";
+          }}
+        >
           <ListItemIcon>
             <PeopleAltRounded />
           </ListItemIcon>
           <ListItemText primary="Clients" />
         </ListItem>
-        <ListItem button key="Items">
+        <ListItem
+          button
+          key="Articles"
+          onClick={() => {
+            window.location = "/Articles";
+          }}
+        >
           <ListItemIcon>
             <ShoppingCartRounded />
           </ListItemIcon>
-          <ListItemText primary="Items" />
+          <ListItemText primary="Articles" />
         </ListItem>
       </List>
     </Drawer>

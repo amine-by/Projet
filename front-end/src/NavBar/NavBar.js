@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import clsx from "clsx"
+import clsx from "clsx";
 import {
   ClickAwayListener,
   Grow,
@@ -45,6 +45,25 @@ export default function NavBar(props) {
 
     prevOpen.current = open;
   }, [open]);
+
+  const moderateurLinks = () => {
+    if (props.mod) {
+      return (
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          onClick={props.handleDrawerOpen}
+          edge="start"
+          className={clsx(
+            props.classes.menuButton,
+            props.open && props.classes.hide
+          )}
+        >
+          <MenuRounded />
+        </IconButton>
+      );
+    }
+  };
 
   const clientLinks = (
     <MenuList
@@ -117,18 +136,7 @@ export default function NavBar(props) {
         })}
       >
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={props.handleDrawerOpen}
-            edge="start"
-            className={clsx(
-              props.classes.menuButton,
-              props.open && props.classes.hide
-            )}
-          >
-            <MenuRounded />
-          </IconButton>
+          {moderateurLinks()}
           <Button
             onClick={() => {
               window.location = "/";
