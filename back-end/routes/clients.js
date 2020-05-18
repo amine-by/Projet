@@ -52,6 +52,26 @@ router.post("/getpanier", verifcationJWT, async (request, response) => {
   });
 });
 
+router.post("/getclients", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      const moderateur = await Client.findOne(
+        { _id: data._id },
+        { _id: 0, moderateur: 1 }
+      );
+      if (moderateur) {
+        Client.find(
+          {},
+          { nom: 1, prenom: 1, email: 1, cree: 1 }
+        ).then((resultat) => response.send(resultat));
+      } else {
+        response.sendStatus(403);
+      }
+    }
+  });
+});
+
 router.post("/majpanier", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);
