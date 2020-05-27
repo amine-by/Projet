@@ -72,6 +72,24 @@ router.post("/getclients", verifcationJWT, async (request, response) => {
   });
 });
 
+router.post("/supprimerclient", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      const moderateur = await Client.findOne(
+        { _id: data._id },
+        { _id: 0, moderateur: 1 }
+      );
+      if (moderateur) {
+        const id = request.body._id;
+        Client.remove({ _id: id }, { justOne: true }).then(() =>
+          response.send("succes")
+        );
+      } else response.sendStatus(403);
+    }
+  });
+});
+
 router.post("/majpanier", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);
