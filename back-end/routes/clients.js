@@ -72,6 +72,25 @@ router.post("/getclients", verifcationJWT, async (request, response) => {
   });
 });
 
+router.post("/modifierclient", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      const moderateur = await Client.findOne(
+        { _id: data._id },
+        { _id: 0, moderateur: 1 }
+      );
+      if (moderateur) {
+        const id = request.body._id;
+        const nom = request.body.nom;
+        const prenom = request.body.prenom;
+        const email = request.body.email;
+        Client.updateOne({ _id: id }, { $set: { nom, prenom, email } }).then(() => response.send())
+      } else response.sendStatus(403);
+    }
+  });
+});
+
 router.post("/supprimerclient", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
     if (erreur) response.sendStatus(403);
@@ -82,9 +101,7 @@ router.post("/supprimerclient", verifcationJWT, async (request, response) => {
       );
       if (moderateur) {
         const id = request.body._id;
-        Client.remove({ _id: id }, { justOne: true }).then(() =>
-          response.send("succes")
-        );
+        Client.deleteOne({ _id: id }).then(() => response.send("succes"));
       } else response.sendStatus(403);
     }
   });

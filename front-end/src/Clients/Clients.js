@@ -24,6 +24,7 @@ const useStyles = makeStyles({
 });
 
 export default function Clients() {
+  const [id, setId] = useState("");
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
@@ -113,7 +114,34 @@ export default function Clients() {
           />
         </DialogContent>
         <DialogActions>
-          <Button color="primary">Confirmer</Button>
+          <Button
+            color="primary"
+            onClick={() => {
+              axios
+                .post(
+                  "http://localhost:4000/clients/modifierclient",
+                  {
+                    _id: id,
+                    nom: nom,
+                    prenom: prenom,
+                    email: email,
+                  },
+                  {
+                    headers: {
+                      Authorization:
+                        "bearer " + localStorage.getItem("jwt-cookie"),
+                    },
+                  }
+                )
+                .then(() => {
+                  setRows([]);
+                  setOpen(false);
+                  refreshRows();
+                });
+            }}
+          >
+            Confirmer
+          </Button>
           <Button
             color="secondary"
             onClick={() => {
@@ -149,6 +177,7 @@ export default function Clients() {
                     color="primary"
                     onClick={() => {
                       setOpen(true);
+                      setId(row._id);
                       setNom(row.nom);
                       setPrenom(row.prenom);
                       setEmail(row.email);
