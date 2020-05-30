@@ -85,7 +85,10 @@ router.post("/modifierclient", verifcationJWT, async (request, response) => {
         const nom = request.body.nom;
         const prenom = request.body.prenom;
         const email = request.body.email;
-        Client.updateOne({ _id: id }, { $set: { nom, prenom, email } }).then(() => response.send())
+        Client.updateOne(
+          { _id: id },
+          { $set: { nom, prenom, email } }
+        ).then(() => response.send("succes"));
       } else response.sendStatus(403);
     }
   });

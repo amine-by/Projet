@@ -7,8 +7,8 @@ const mongoose = require("mongoose");
 dotenv.config();
 
 //imports routes
-const clients = require("./routes/clients");
-const articles = require("./routes/articles");
+const clients = require("./routes/clients.routes");
+const articles = require("./routes/articles.routes");
 
 const app = express();
 const port = 4000;
