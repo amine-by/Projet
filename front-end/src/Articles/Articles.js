@@ -2,107 +2,92 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import {
-  Typography,
-  Grid,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormLabel,
-  FormControl,
-  GridList,
   Paper,
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
   Button,
 } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(3,3,0,1),
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650,
   },
-  Box: {
-    margin: theme.spacing(1),
-    width: 200,
-  },
-  Text: {
-    margin: theme.spacing(0, 1),
-    textAlign: "center",
-  },
-  paper: {
-    padding: theme.spacing(2),
-    margin: "auto",
-    height: 170,
-  },
-}));
+});
 
 export default function Articles() {
   const classes = useStyles();
-  const [data, setData] = useState([]);
+  const [rows, setRows] = useState([]);
 
-  const handleData = (value) => {
+  const refreshRows = () => {
     axios
-      .post("http://localhost:4000/articles/recherche", {
-        prix: value,
-      })
+      .post("http://localhost:4000/articles/recherche", {})
       .then((resultat) => {
-        setData(resultat.data);
+        setRows(resultat.data);
       });
   };
 
   useEffect(() => {
-    handleData("Tout");
+    refreshRows();
   }, []);
 
   return (
-    <div>
-      <Button color="primary">
-        Ajouter Article
-      </Button>
-      <Grid container direction="row">
-        <Grid item driection="column" className={classes.formControl}>
-          <FormControl>
-            <FormLabel>Prix</FormLabel>
-            <RadioGroup
-              defaultValue={"Tout"}
-              onChange={(e) => {
-                handleData(e.target.value);
-              }}
-            >
-              <FormControlLabel value="Tout" control={<Radio />} label="Tout" />
-              <FormControlLabel
-                value="de 0 à 25"
-                control={<Radio />}
-                label="de 0 à 25"
-              />
-              <FormControlLabel
-                value="de 25 à 50"
-                control={<Radio />}
-                label="de 25 à 50"
-              />
-              <FormControlLabel
-                value="de 50 à 100"
-                control={<Radio />}
-                label="de 50 à 100"
-              />
-              <FormControlLabel
-                value="plus que 100"
-                control={<Radio />}
-                label="plus que 100"
-              />
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-        <Grid item className={classes.formControl} xs={true}>
-          <GridList cols={1} spacing={1}>
-            {data.map((i) => (
-              <Grid item>
-                <Paper className={classes.paper}>
-                  <Typography>{i.nom}</Typography>
-                  <Typography>{i.prix}DT</Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </GridList>
-        </Grid>
-      </Grid>
-    </div>
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Nom</TableCell>
+            <TableCell>Prix</TableCell>
+            <TableCell>Quantité</TableCell>
+            <TableCell>Date de création</TableCell>
+            <TableCell align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow>
+              <TableCell>{row._id}</TableCell>
+              <TableCell>{row.nom}</TableCell>
+              <TableCell>{row.prix}</TableCell>
+              <TableCell>{row.quantite}</TableCell>
+              <TableCell>{row.cree}</TableCell>
+              <TableCell align="center">
+                <Button color="primary" onClick={() => {}}>
+                  Modifier
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    axios
+                      .post(
+                        "http://localhost:4000/articles/supprimer",
+                        {
+                          _id: row._id,
+                        },
+                        {
+                          headers: {
+                            Authorization:
+                              "bearer " + localStorage.getItem("jwt-cookie"),
+                          },
+                        }
+                      )
+                      .then(() => {
+                        setRows([]);
+                        refreshRows();
+                      });
+                  }}
+                >
+                  Supprimer
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

@@ -4,17 +4,7 @@ const jwt = require("jsonwebtoken");
 const Client = require("../models/client.model");
 const Article = require("../models/article.model");
 
-const verifcationJWT = (request, response, next) => {
-  const bearerHeader = request.headers["authorization"];
-  if (typeof bearerHeader !== "undefined") {
-    const bearer = bearerHeader.split(" ");
-    const bearerToken = bearer[1];
-    request.token = bearerToken;
-    next();
-  } else {
-    response.sendStatus(403);
-  }
-};
+const verifcationJWT = require("../verification/verification");
 
 router.post("/estmoderateur", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
