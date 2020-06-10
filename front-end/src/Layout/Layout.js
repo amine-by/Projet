@@ -9,6 +9,8 @@ import Connexion from "../Connexion/Connexion";
 import Panier from "../Panier/Panier";
 import Article from "../Article/Article";
 import Articles from "../Articles/Articles";
+import Categories from "../Categories/Categories";
+import Marques from "../Marques/Marques";
 import Clients from "../Clients/Clients"
 import ClientRoute from "../ClientRoute/ClientRoute";
 import VisiteurRoute from "../VisiteurRoute/VisiteurRoute";
@@ -24,6 +26,8 @@ export default function Layout(props) {
       <Switch>
         <Route exact path="/" component={Acceuil} />
         <ClientRoute path="/Articles" component={Articles}/>
+        <ClientRoute path="/Categories" component={Categories}></ClientRoute>
+        <ClientRoute path="/Marques" component={Marques}></ClientRoute>
         <ClientRoute path="/Clients" component={Clients} />
         <ClientRoute path="/Historique" component={Historique} />
         <ClientRoute path="/Compte" component={Compte} />

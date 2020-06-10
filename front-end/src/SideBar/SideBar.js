@@ -9,6 +9,8 @@ import {
   List,
 } from "@material-ui/core";
 import {
+  BusinessRounded,
+  CategoryRounded,
   ChevronLeftRounded,
   ChevronRightRounded,
   PeopleAltRounded,
@@ -49,6 +51,7 @@ export default function SideBar(props) {
           </ListItemIcon>
           <ListItemText primary="Clients" />
         </ListItem>
+
         <ListItem
           button
           key="Articles"
@@ -60,6 +63,32 @@ export default function SideBar(props) {
             <ShoppingCartRounded />
           </ListItemIcon>
           <ListItemText primary="Articles" />
+        </ListItem>
+
+        <ListItem
+          button
+          key="Categories"
+          onClick={() => {
+            window.location = "/Categories";
+          }}
+        >
+          <ListItemIcon>
+            <CategoryRounded />
+          </ListItemIcon>
+          <ListItemText primary="Categories" />
+        </ListItem>
+
+        <ListItem
+          button
+          key="Marques"
+          onClick={() => {
+            window.location = "/Marques";
+          }}
+        >
+          <ListItemIcon>
+            <BusinessRounded />
+          </ListItemIcon>
+          <ListItemText primary="Marques" />
         </ListItem>
       </List>
     </Drawer>

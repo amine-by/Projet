@@ -10,6 +10,44 @@ router.route("/recherche/:id").get(async (request, response) => {
   response.send(article);
 });
 
+router.post("/modifier", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      const moderateur = await Client.findOne(
+        { _id: data._id },
+        { _id: 0, moderateur: 1 }
+      );
+      if (moderateur) {
+        const id = request.body._id;
+        const nom = request.body.nom;
+        const couleur = request.body.couleur;
+        const categorie = request.body.categorie;
+        const marque = request.body.marque;
+        const quantite = request.body.quantite;
+        const taille = request.body.taille;
+        const description = request.body.description;
+        const prix = request.body.prix;
+        Article.updateOne(
+          { _id: id },
+          {
+            $set: {
+              nom,
+              couleur,
+              categorie,
+              marque,
+              quantite,
+              taille,
+              description,
+              prix,
+            },
+          }
+        ).then(() => response.send("succes"));
+      } else response.sendStatus(403);
+    }
+  });
+});
+
 router.route("/recherche").post(async (request, response) => {
   const prix = request.body.prix;
   let article;
@@ -61,29 +99,42 @@ router.post("/supprimer", verifcationJWT, async (request, response) => {
   });
 });
 
-router.route("/ajouter").post((request, response) => {
-  const nom = request.body.nom;
-  const couleur = request.body.couleur;
-  const categorie = request.body.categorie;
-  const quantite = request.body.quantite;
-  const taille = request.body.taille;
-  const description = request.body.description;
-  const prix = request.body.prix;
+router.post("/ajouter", verifcationJWT, async (request, response) => {
+  await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
+    if (erreur) response.sendStatus(403);
+    else {
+      const moderateur = await Client.findOne(
+        { _id: data._id },
+        { _id: 0, moderateur: 1 }
+      );
+      if (moderateur) {
+        const nom = request.body.nom;
+        const couleur = request.body.couleur;
+        const categorie = request.body.categorie;
+        const marque = request.body.marque;
+        const quantite = request.body.quantite;
+        const taille = request.body.taille;
+        const description = request.body.description;
+        const prix = request.body.prix;
 
-  const newArticle = new Article({
-    nom,
-    couleur,
-    categorie,
-    quantite,
-    taille,
-    description,
-    prix,
+        const newArticle = new Article({
+          nom,
+          couleur,
+          categorie,
+          marque,
+          quantite,
+          taille,
+          description,
+          prix,
+        });
+
+        newArticle
+          .save()
+          .then(() => response.json("Article ajouté"))
+          .catch((erreur) => response.json("Erreur " + erreur));
+      }
+    }
   });
-
-  newArticle
-    .save()
-    .then(() => response.json("Article ajouté"))
-    .catch((erreur) => response.json("Erreur " + erreur));
 });
 
 module.exports = router;
