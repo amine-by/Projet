@@ -6,14 +6,22 @@ const Article = require("../models/article.model");
 
 const verifcationJWT = require("../verification/verification");
 
-router.post("/estmoderateur", verifcationJWT, async (request, response) => {
+router.post("/type", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, (erreur, data) => {
     if (erreur) response.sendStatus(403);
     else {
       Client.findOne(
         { _id: data._id },
-        { _id: 0, moderateur: 1 }
-      ).then((resultat) => response.send(resultat.moderateur));
+        { _id: 0, moderateur: 1, administrateur: 1 }
+      ).then((resultat) => {
+        if (resultat.administrateur) {
+          response.send("administrateur");
+        } else if(resultat.moderateur){
+          response.send("moderateur")
+        } else {
+          response.send("client")
+        }
+      });
     }
   });
 });
@@ -46,11 +54,11 @@ router.post("/getclients", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
     if (erreur) response.sendStatus(403);
     else {
-      const moderateur = await Client.findOne(
+      const utilisateur = await Client.findOne(
         { _id: data._id },
-        { _id: 0, moderateur: 1 }
+        { _id: 0, moderateur: 1, administrateur: 1 }
       );
-      if (moderateur) {
+      if (utilisateur.moderateur || utilisateur.administrateur) {
         Client.find(
           {},
           { nom: 1, prenom: 1, email: 1, cree: 1 }
@@ -66,11 +74,11 @@ router.post("/modifierclient", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
     if (erreur) response.sendStatus(403);
     else {
-      const moderateur = await Client.findOne(
+      const administrateur = await Client.findOne(
         { _id: data._id },
-        { _id: 0, moderateur: 1 }
+        { _id: 0, administrateur: 1 }
       );
-      if (moderateur) {
+      if (administrateur.administrateur) {
         const id = request.body._id;
         const nom = request.body.nom;
         const prenom = request.body.prenom;
@@ -88,11 +96,11 @@ router.post("/supprimerclient", verifcationJWT, async (request, response) => {
   await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
     if (erreur) response.sendStatus(403);
     else {
-      const moderateur = await Client.findOne(
+      const administrateur = await Client.findOne(
         { _id: data._id },
-        { _id: 0, moderateur: 1 }
+        { _id: 0, administrateur: 1 }
       );
-      if (moderateur) {
+      if (administrateur.administrateur) {
         const id = request.body._id;
         Client.deleteOne({ _id: id }).then(() => response.send("succes"));
       } else response.sendStatus(403);
@@ -173,11 +181,13 @@ router.route("/ajouter").post((request, response) => {
   const prenom = request.body.prenom;
   const email = request.body.email;
   const passe = request.body.passe;
+  const telephone = request.body.telephone;
 
   const newClient = new Client({
     nom,
     prenom,
     email,
+    telephone,
   });
 
   newClient.passe = newClient.generateHash(passe);

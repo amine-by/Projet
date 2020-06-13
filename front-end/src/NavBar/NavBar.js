@@ -47,7 +47,7 @@ export default function NavBar(props) {
   }, [open]);
 
   const moderateurLinks = () => {
-    if (props.mod) {
+    if (props.type === "administrateur" || props.type === "moderateur") {
       return (
         <IconButton
           color="inherit"
@@ -196,6 +196,7 @@ export default function NavBar(props) {
           </Button>
         </Toolbar>
       </AppBar>
+
     </div>
   );
 }

@@ -74,23 +74,28 @@ const useStyles = makeStyles((theme) => ({
 export default function App() {
   const classes = useStyles();
   const theme = useTheme();
-  const [mod, setMod] = useState(false);
+  const [type, setType] = useState(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    axios
-      .post(
-        "http://localhost:4000/clients/estmoderateur",
-        {},
-        {
-          headers: {
-            Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
-          },
-        }
-      )
-      .then((resultat) => {
-        setMod(resultat.data);
-      });
+    setType(null);
+    if (!localStorage.getItem("jwt-cookie")) {
+      setType("visiteur");
+    } else {
+      axios
+        .post(
+          "http://localhost:4000/clients/type",
+          {},
+          {
+            headers: {
+              Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+            },
+          }
+        )
+        .then((resultat) => {
+          setType(resultat.data);
+        });
+    }
   }, []);
 
   const handleDrawerOpen = () => {
@@ -108,7 +113,7 @@ export default function App() {
           classes={classes}
           theme={theme}
           open={open}
-          mod={mod}
+          type={type}
           handleDrawerOpen={handleDrawerOpen}
         />
         <SideBar
@@ -117,7 +122,7 @@ export default function App() {
           open={open}
           handleDrawerClose={handleDrawerClose}
         />
-        <Layout classes={classes} theme={theme} open={open} />
+        <Layout classes={classes} theme={theme} open={open} type={type} />
       </Router>
     </div>
   );

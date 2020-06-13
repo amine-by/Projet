@@ -10,24 +10,24 @@ import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
 import axios from "axios";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 export default function Inscription(props) {
@@ -37,10 +37,17 @@ export default function Inscription(props) {
   const [prenom, setPrenom] = useState("");
   const [email, setEmail] = useState("");
   const [passe, setPasse] = useState("");
+  const [telephone, setTelephone] = useState("");
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    if (nom === "" || prenom === "" || email === "" || passe === "") {
+    if (
+      nom === "" ||
+      prenom === "" ||
+      email === "" ||
+      passe === "" ||
+      telephone === ""
+    ) {
       setAlert(() => (
         <Alert severity="error">Veuillez remplir tous vos coordonnees</Alert>
       ));
@@ -48,13 +55,26 @@ export default function Inscription(props) {
         setAlert("");
       }, 5000);
     } else {
-      axios.post("http://localhost:4000/clients/ajouter", {
-        nom: nom,
-        prenom: prenom,
-        email: email,
-        passe: passe
-      });
-      window.location = "/Connexion";
+      axios
+        .post("http://localhost:4000/clients/ajouter", {
+          nom: nom,
+          prenom: prenom,
+          email: email,
+          passe: passe,
+          telephone: telephone,
+        })
+        .then((response) => {
+          if (response.data === "Client ajouté") {
+            window.location = "/Connexion";
+          } else {
+            setAlert(() => (
+              <Alert severity="error">Veuillez verifiez vos coordonnees</Alert>
+            ));
+            setTimeout(() => {
+              setAlert("");
+            }, 5000);
+          }
+        });
     }
   };
 
@@ -77,7 +97,7 @@ export default function Inscription(props) {
             id="nom"
             variant="outlined"
             value={nom}
-            onChange={event => setNom(event.target.value)}
+            onChange={(event) => setNom(event.target.value)}
             required
             fullWidth
             label="Nom"
@@ -89,7 +109,7 @@ export default function Inscription(props) {
             required
             fullWidth
             value={prenom}
-            onChange={event => setPrenom(event.target.value)}
+            onChange={(event) => setPrenom(event.target.value)}
             id="prenom"
             label="Prénom"
             name="prenom"
@@ -102,7 +122,7 @@ export default function Inscription(props) {
             required
             fullWidth
             value={email}
-            onChange={event => setEmail(event.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             id="email"
             label="Email"
             name="email"
@@ -114,13 +134,27 @@ export default function Inscription(props) {
             required
             fullWidth
             value={passe}
-            onChange={event => setPasse(event.target.value)}
+            onChange={(event) => setPasse(event.target.value)}
             name="passe"
             label="Mot de passe"
             type="password"
             id="passe"
             autoComplete="passe"
           />
+
+          <TextField
+            margin="normal"
+            variant="outlined"
+            required
+            fullWidth
+            value={telephone}
+            onChange={(event) => setTelephone(event.target.value)}
+            name="telephone"
+            label="Numéro Telephone"
+            id="telephone"
+            autoComplete="telephone"
+          />
+
           <Button
             type="submit"
             fullWidth

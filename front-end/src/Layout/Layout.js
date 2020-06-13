@@ -1,5 +1,5 @@
 import React from "react";
-import clsx from "clsx"
+import clsx from "clsx";
 import { Route, Switch } from "react-router-dom";
 import Historique from "../Historique/Historique";
 import Compte from "../Compte/Compte";
@@ -11,9 +11,10 @@ import Article from "../Article/Article";
 import Articles from "../Articles/Articles";
 import Categories from "../Categories/Categories";
 import Marques from "../Marques/Marques";
-import Clients from "../Clients/Clients"
+import Clients from "../Clients/Clients";
 import ClientRoute from "../ClientRoute/ClientRoute";
 import VisiteurRoute from "../VisiteurRoute/VisiteurRoute";
+import ModerateurRoute from "../ModerateurRoute/ModerateurRoute"
 import Erreur from "../Erreur/Erreur";
 
 export default function Layout(props) {
@@ -24,19 +25,19 @@ export default function Layout(props) {
       })}
     >
       <Switch>
-        <Route exact path="/" component={Acceuil} />
-        <ClientRoute path="/Articles" component={Articles}/>
-        <ClientRoute path="/Categories" component={Categories}></ClientRoute>
-        <ClientRoute path="/Marques" component={Marques}></ClientRoute>
-        <ClientRoute path="/Clients" component={Clients} />
+        <ModerateurRoute path="/Articles" component={Articles} />
+        <ModerateurRoute path="/Categories" component={Categories} />
+        <ModerateurRoute path="/Marques" component={Marques} />
+        <ModerateurRoute path="/Clients" component={Clients} type={props.type} />
         <ClientRoute path="/Historique" component={Historique} />
         <ClientRoute path="/Compte" component={Compte} />
         <VisiteurRoute path="/Inscription" component={Inscription} />
         <VisiteurRoute path="/Connexion" component={Connexion} />
+        <Route exact path="/" component={Acceuil} />
         <Route path="/Panier" component={Panier} />
         <Route path="/Article/:id" component={Article} />
         <Route path="*" component={Erreur} />
       </Switch>
-     </main>
+    </main>
   );
 }

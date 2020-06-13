@@ -9,7 +9,8 @@ const clientSchema = new mongoose.Schema({
   cree: { type: Date, default: Date.now },
   panier: { type: Array, default: Array },
   moderateur: { type: Boolean, default: false },
-  administrateur: { type: Boolean, default: false }
+  administrateur: { type: Boolean, default: false },
+  telephone: { type: Number, required: true },
 });
 
 clientSchema.methods.generateHash = (passe) =>

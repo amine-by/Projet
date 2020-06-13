@@ -23,13 +23,60 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Clients() {
+export default function Clients(props) {
   const [id, setId] = useState("");
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
+
+  const tableHeadActions = () => {
+    if (props.type === "administrateur")
+      return <TableCell align="center">Actions</TableCell>;
+  };
+
+  const tableBodyActions = (row) => {
+    if (props.type === "administrateur")
+      return (
+        <TableCell align="center">
+          <Button
+            color="primary"
+            onClick={() => {
+              setOpen(true);
+              setId(row._id);
+              setNom(row.nom);
+              setPrenom(row.prenom);
+              setEmail(row.email);
+            }}
+          >
+            Modifier
+          </Button>
+          <Button
+            color="secondary"
+            onClick={() => {
+              axios
+                .post(
+                  "http://localhost:4000/clients/supprimerclient",
+                  { _id: row._id },
+                  {
+                    headers: {
+                      Authorization:
+                        "bearer " + localStorage.getItem("jwt-cookie"),
+                    },
+                  }
+                )
+                .then(() => {
+                  setRows([]);
+                  refreshRows();
+                });
+            }}
+          >
+            Supprimer
+          </Button>
+        </TableCell>
+      );
+  };
 
   const refreshRows = () => {
     axios
@@ -161,7 +208,7 @@ export default function Clients() {
               <TableCell>Prenom</TableCell>
               <TableCell>E-mail</TableCell>
               <TableCell>Date de création</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              {tableHeadActions()}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -172,42 +219,7 @@ export default function Clients() {
                 <TableCell>{row.prenom}</TableCell>
                 <TableCell>{row.email}</TableCell>
                 <TableCell>{row.cree}</TableCell>
-                <TableCell align="center">
-                  <Button
-                    color="primary"
-                    onClick={() => {
-                      setOpen(true);
-                      setId(row._id);
-                      setNom(row.nom);
-                      setPrenom(row.prenom);
-                      setEmail(row.email);
-                    }}
-                  >
-                    Modifier
-                  </Button>
-                  <Button
-                    color="secondary"
-                    onClick={() => {
-                      axios
-                        .post(
-                          "http://localhost:4000/clients/supprimerclient",
-                          { _id: row._id },
-                          {
-                            headers: {
-                              Authorization:
-                                "bearer " + localStorage.getItem("jwt-cookie"),
-                            },
-                          }
-                        )
-                        .then(() => {
-                          setRows([]);
-                          refreshRows();
-                        });
-                    }}
-                  >
-                    Supprimer
-                  </Button>
-                </TableCell>
+                {tableBodyActions(row)}
               </TableRow>
             ))}
           </TableBody>
