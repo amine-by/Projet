@@ -20,11 +20,17 @@ const useStyles = makeStyles(theme => ({
   },
   Box: {
     margin: theme.spacing(1),
-    width: 200
+    width: 200,
   },
   Text: {
     margin: theme.spacing(0, 1),
     textAlign: "center"
+  },
+  image: {
+    maxWidth:195,
+    height: 125,
+    display: "block",
+    margin: "auto"
   }
 }));
 
@@ -38,6 +44,11 @@ export default function Acceuil() {
         prix: value
       })
       .then(resultat => {
+        resultat.data.map((r) => {
+          return r.image =
+            "data:image/jpeg;base64," +
+            new Buffer(r.image.data.data).toString("base64");
+        });
         setData(resultat.data);
       });
   };
@@ -87,6 +98,7 @@ export default function Acceuil() {
             <Paper
               className={classes.Box}
             >
+              <img alt={d.nom} src={d.image} className={classes.image}></img>
               <Typography className={classes.Text} noWrap="true">
                 <Link href={"/Article/" + d._id}> {d.nom} </Link>
               </Typography>

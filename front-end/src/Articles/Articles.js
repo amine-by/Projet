@@ -22,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
   },
+  image:{
+  maxHeight: 75,
+  maxWidth: 75
+  },
+
   btnSpacing: {
     margin: theme.spacing(0, 1, 1, 0),
   },
@@ -41,14 +46,63 @@ export default function Articles() {
   const [description, setDescription] = useState("");
   const [couleur, setCouleur] = useState("");
   const [taille, setTaille] = useState("");
+  const [image, setImage] = useState(null);
   const [open, setOpen] = useState(false);
 
   const refreshRows = () => {
+    setOpen(false);
+    setRows([]);
     axios
       .post("http://localhost:4000/articles/recherche", {})
       .then((resultat) => {
+        resultat.data.map((r) => {
+          return r.image =
+            "data:image/jpeg;base64," +
+            new Buffer(r.image.data.data).toString("base64");
+        });
         setRows(resultat.data);
       });
+  };
+
+  const modifier = () => {
+    const fd = new FormData();
+    fd.append("_id", id);
+    fd.append("nom", nom);
+    fd.append("prix", prix);
+    fd.append("couleur", couleur);
+    fd.append("taille", taille);
+    fd.append("description", description);
+    fd.append("quantite", quantite);
+    fd.append("categorie", categorie);
+    fd.append("marque", marque);
+    fd.append("image", image);
+    axios
+      .post("http://localhost:4000/articles/modifier", fd, {
+        headers: {
+          Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+        },
+      })
+      .then(() => refreshRows());
+  };
+
+  const ajouter = () => {
+    const fd = new FormData();
+    fd.append("nom", nom);
+    fd.append("prix", prix);
+    fd.append("couleur", couleur);
+    fd.append("taille", taille);
+    fd.append("description", description);
+    fd.append("quantite", quantite);
+    fd.append("categorie", categorie);
+    fd.append("marque", marque);
+    fd.append("image", image);
+    axios
+      .post("http://localhost:4000/articles/ajouter", fd, {
+        headers: {
+          Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+        },
+      })
+      .then(() => refreshRows());
   };
 
   useEffect(() => {
@@ -76,20 +130,20 @@ export default function Articles() {
         fullWidth
         onClose={() => {
           setOpen(false);
-          setId("");
-          setNom("");
-          setPrix("");
-          setDescription("");
-          setQuantite("");
-          setCouleur("");
-          setTaille("");
-          setMarque("");
-          setCategorie("");
         }}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Ajouter Article</DialogTitle>
         <DialogContent>
+          <TextField
+            type="file"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            onChange={(event) => {
+              setImage(event.target.files[0]);
+            }}
+          ></TextField>
           <TextField
             value={nom}
             onChange={(event) => {
@@ -213,58 +267,10 @@ export default function Articles() {
             color="primary"
             onClick={() => {
               if (id === "") {
-                axios
-                  .post(
-                    "http://localhost:4000/articles/ajouter",
-                    {
-                      nom,
-                      prix,
-                      couleur,
-                      taille,
-                      description,
-                      quantite,
-                      categorie,
-                      marque,
-                    },
-                    {
-                      headers: {
-                        Authorization:
-                          "bearer " + localStorage.getItem("jwt-cookie"),
-                      },
-                    }
-                  )
-                  .then(() => {
-                    setRows([]);
-                    refreshRows();
-                  });
+                ajouter();
               } else {
-                axios
-                  .post(
-                    "http://localhost:4000/articles/modifier",
-                    {
-                      _id: id,
-                      nom,
-                      prix,
-                      couleur,
-                      taille,
-                      description,
-                      quantite,
-                      categorie,
-                      marque,
-                    },
-                    {
-                      headers: {
-                        Authorization:
-                          "bearer " + localStorage.getItem("jwt-cookie"),
-                      },
-                    }
-                  )
-                  .then(() => {
-                    setRows([]);
-                    refreshRows();
-                  });
+                modifier();
               }
-              setOpen(false);
             }}
           >
             Confirmer
@@ -284,6 +290,16 @@ export default function Articles() {
         className={classes.btnSpacing}
         onClick={() => {
           setOpen(true);
+          setId("");
+          setNom("");
+          setPrix("");
+          setDescription("");
+          setQuantite("");
+          setCouleur("");
+          setTaille("");
+          setMarque("");
+          setCategorie("");
+          setImage(null);
         }}
       >
         Ajouter Article
@@ -293,6 +309,7 @@ export default function Articles() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
+              <TableCell>Image</TableCell>
               <TableCell>Nom</TableCell>
               <TableCell>Prix</TableCell>
               <TableCell>Quantité</TableCell>
@@ -304,6 +321,9 @@ export default function Articles() {
             {rows.map((row) => (
               <TableRow>
                 <TableCell>{row._id}</TableCell>
+                <TableCell>
+                  <img alt={row.nom} src={row.image} className={classes.image} ></img>
+                </TableCell>
                 <TableCell>{row.nom}</TableCell>
                 <TableCell>{row.prix}</TableCell>
                 <TableCell>{row.quantite}</TableCell>
@@ -343,7 +363,6 @@ export default function Articles() {
                           }
                         )
                         .then(() => {
-                          setRows([]);
                           refreshRows();
                         });
                     }}

@@ -2,51 +2,91 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const Client = require("../models/client.model");
 const Article = require("../models/article.model");
-
+const multer = require("multer");
 const verifcationJWT = require("../verification/verification");
 
-router.route("/recherche/:id").get(async (request, response) => {
-  article = await Article.findById(request.params.id);
-  response.send(article);
+const upload = multer({
+  limits: {
+    fileSize: 1000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpeg|jpg)$/)) {
+      cb(new Error("only upload files with jpg or jpeg format."));
+    }
+    cb(undefined, true);
+  },
 });
 
-router.post("/modifier", verifcationJWT, async (request, response) => {
-  await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
-    if (erreur) response.sendStatus(403);
-    else {
-      const moderateur = await Client.findOne(
-        { _id: data._id },
-        { _id: 0, moderateur: 1 }
-      );
-      if (moderateur) {
-        const id = request.body._id;
-        const nom = request.body.nom;
-        const couleur = request.body.couleur;
-        const categorie = request.body.categorie;
-        const marque = request.body.marque;
-        const quantite = request.body.quantite;
-        const taille = request.body.taille;
-        const description = request.body.description;
-        const prix = request.body.prix;
-        Article.updateOne(
-          { _id: id },
-          {
-            $set: {
-              nom,
-              couleur,
-              categorie,
-              marque,
-              quantite,
-              taille,
-              description,
-              prix,
-            },
-          }
-        ).then(() => response.send("succes"));
-      } else response.sendStatus(403);
-    }
+router.route("/recherche/:id").get((request, response) => {
+  Article.findById(request.params.id).then((resultat) => {
+    response.send(resultat);
   });
 });
+
+router.post(
+  "/modifier",
+  upload.single("image"),
+  verifcationJWT,
+  async (request, response) => {
+    await jwt.verify(
+      request.token,
+      process.env.SECRET,
+      async (erreur, data) => {
+        if (erreur) response.sendStatus(403);
+        else {
+          const moderateur = await Client.findOne(
+            { _id: data._id },
+            { _id: 0, moderateur: 1 }
+          );
+          if (moderateur) {
+            const id = request.body._id;
+            const nom = request.body.nom;
+            const couleur = request.body.couleur;
+            const categorie = request.body.categorie;
+            const marque = request.body.marque;
+            const quantite = request.body.quantite;
+            const taille = request.body.taille;
+            const description = request.body.description;
+            const prix = request.body.prix;
+            if (request.file)
+              Article.updateOne(
+                { _id: id },
+                {
+                  $set: {
+                    nom,
+                    couleur,
+                    categorie,
+                    marque,
+                    quantite,
+                    taille,
+                    description,
+                    prix,
+                    "image.data": request.file.buffer,
+                  },
+                }
+              ).then(() => response.send("succes"));
+            else
+              Article.updateOne(
+                { _id: id },
+                {
+                  $set: {
+                    nom,
+                    couleur,
+                    categorie,
+                    marque,
+                    quantite,
+                    taille,
+                    description,
+                    prix,
+                  },
+                }
+              ).then(() => response.send("succes"));
+          } else response.sendStatus(403);
+        }
+      }
+    );
+  }
+);
 
 router.route("/recherche").post(async (request, response) => {
   const prix = request.body.prix;
@@ -99,42 +139,54 @@ router.post("/supprimer", verifcationJWT, async (request, response) => {
   });
 });
 
-router.post("/ajouter", verifcationJWT, async (request, response) => {
-  await jwt.verify(request.token, process.env.SECRET, async (erreur, data) => {
-    if (erreur) response.sendStatus(403);
-    else {
-      const moderateur = await Client.findOne(
-        { _id: data._id },
-        { _id: 0, moderateur: 1 }
-      );
-      if (moderateur) {
-        const nom = request.body.nom;
-        const couleur = request.body.couleur;
-        const categorie = request.body.categorie;
-        const marque = request.body.marque;
-        const quantite = request.body.quantite;
-        const taille = request.body.taille;
-        const description = request.body.description;
-        const prix = request.body.prix;
+router.post(
+  "/ajouter",
+  upload.single("image"),
+  verifcationJWT,
+  async (request, response) => {
+    await jwt.verify(
+      request.token,
+      process.env.SECRET,
+      async (erreur, data) => {
+        if (erreur) response.sendStatus(403);
+        else {
+          const moderateur = await Client.findOne(
+            { _id: data._id },
+            { _id: 0, moderateur: 1 }
+          );
+          if (moderateur) {
+            const nom = request.body.nom;
+            const couleur = request.body.couleur;
+            const categorie = request.body.categorie;
+            const marque = request.body.marque;
+            const quantite = request.body.quantite;
+            const taille = request.body.taille;
+            const description = request.body.description;
+            const prix = request.body.prix;
 
-        const newArticle = new Article({
-          nom,
-          couleur,
-          categorie,
-          marque,
-          quantite,
-          taille,
-          description,
-          prix,
-        });
+            const newArticle = new Article({
+              nom,
+              couleur,
+              categorie,
+              marque,
+              quantite,
+              taille,
+              description,
+              prix,
+            });
 
-        newArticle
-          .save()
-          .then(() => response.json("Article ajouté"))
-          .catch((erreur) => response.json("Erreur " + erreur));
+            if (request.file) {
+              newArticle.image.data = request.file.buffer;
+            }
+            newArticle
+              .save()
+              .then(() => response.json("Article ajouté"))
+              .catch((erreur) => response.json("Erreur " + erreur));
+          }
+        }
       }
-    }
-  });
-});
+    );
+  }
+);
 
 module.exports = router;

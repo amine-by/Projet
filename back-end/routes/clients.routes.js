@@ -16,10 +16,10 @@ router.post("/type", verifcationJWT, async (request, response) => {
       ).then((resultat) => {
         if (resultat.administrateur) {
           response.send("administrateur");
-        } else if(resultat.moderateur){
-          response.send("moderateur")
+        } else if (resultat.moderateur) {
+          response.send("moderateur");
         } else {
-          response.send("client")
+          response.send("client");
         }
       });
     }

@@ -22,23 +22,23 @@ app.use(express.json());
 app.use("/clients", clients);
 app.use("/articles", articles);
 app.use("/categories", categories);
-app.use("/marques", marques)
+app.use("/marques", marques);
 
 app.get("/", (request, response) => {
   response.send("ça marche!");
 });
 
 //connection à la base de donnée MongoDB
-mongoose.connect(uri, {
+const conn = mongoose.connect(uri, {
   useNewUrlParser: true,
   useCreateIndex: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
 //
-mongoose.connection.once("open", () =>
-  console.log("connecté à la base MongoDB")
-);
+mongoose.connection.once("open", () => {
+  console.log("connecté à la base MongoDB");
+});
 
 //connection au serveur express
 app.listen(port, () => console.log("serveur lancé au port " + port));

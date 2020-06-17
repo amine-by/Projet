@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const articleSchema = new mongoose.Schema({
   nom: { type: String, trim: true, required: true },
-  image: { data: Buffer, contentType: String },
+  image: { data: Buffer },
   couleur: { type: String },
   categorie: { type: String, required: true },
   marque: { type: String, required: true },

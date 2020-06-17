@@ -5,30 +5,27 @@ import {
   Button,
   makeStyles,
   TextField,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
-const useStyles = makeStyles(theme => ({
-  container: {
-    maxWidth: 350
-  },
+const useStyles = makeStyles((theme) => ({
   paper: {
     margin: theme.spacing(2),
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   spacing: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 export default function Article() {
@@ -40,7 +37,7 @@ export default function Article() {
 
   const [quantite, setQuantite] = useState("");
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (quantite === "") {
       setAlert(() => (
@@ -55,8 +52,8 @@ export default function Article() {
         array.push({ _id: data._id, quantite: parseInt(quantite) });
         axios.post("http://localhost:4000/clients/majpanier", array, {
           headers: {
-            Authorization: "bearer " + localStorage.getItem("jwt-cookie")
-          }
+            Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+          },
         });
       } else {
         if (localStorage.getItem("cart-cookie")) {
@@ -92,54 +89,62 @@ export default function Article() {
         "http://localhost:4000/articles/recherche/" +
           window.location.pathname.substring(9, window.location.pathname.length)
       )
-      .then(resultat => {
+      .then((resultat) => {
+        resultat.data.image =
+          "data:image/jpeg;base64," +
+          new Buffer(resultat.data.image.data.data).toString("base64");
         setData(resultat.data);
         for (let i = 1; i <= resultat.data.quantite; i++) {
-          setQuantites(quantites => [
+          setQuantites((quantites) => [
             ...quantites,
             {
-              title: i.toString()
-            }
+              title: i.toString(),
+            },
           ]);
         }
       });
   }, []);
   return (
-    <Grid container className={classes.container}>
-      <div className={classes.paper}>
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
-          <Typography variant="h5" className={classes.spacing}>
-            {data.nom}
-          </Typography>
-          <Typography
-            variant="h4"
-            color="secondary"
-            className={classes.spacing}
-          >
-            {data.prix} DT
-          </Typography>
-          {alert}
-          <Autocomplete
-            className={classes.spacing}
-            id="combo-box-demo"
-            onInputChange={(event, value) => setQuantite(value)}
-            options={quantites}
-            getOptionLabel={option => option.title}
-            renderInput={params => (
-              <TextField {...params} label="quantité" variant="outlined" />
-            )}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            fullWidth
-          >
-            Ajouter au panier
-          </Button>
-        </form>
-      </div>
+    <Grid container direction="row">
+      <Grid item>
+        <img alt={data.nom} src={data.image}></img>
+      </Grid>
+      <Grid item>
+        <div className={classes.paper}>
+          <form onSubmit={handleSubmit} className={classes.form} noValidate>
+            <Typography variant="h5" className={classes.spacing}>
+              {data.nom}
+            </Typography>
+            <Typography
+              variant="h4"
+              color="secondary"
+              className={classes.spacing}
+            >
+              {data.prix} DT
+            </Typography>
+            {alert}
+            <Autocomplete
+              className={classes.spacing}
+              id="combo-box-demo"
+              onInputChange={(event, value) => setQuantite(value)}
+              options={quantites}
+              getOptionLabel={(option) => option.title}
+              renderInput={(params) => (
+                <TextField {...params} label="quantité" variant="outlined" />
+              )}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              fullWidth
+            >
+              Ajouter au panier
+            </Button>
+          </form>
+        </div>
+      </Grid>
     </Grid>
   );
 }
