@@ -309,7 +309,7 @@ export default function Articles() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Image</TableCell>
+              <TableCell align="center">Image</TableCell>
               <TableCell>Nom</TableCell>
               <TableCell>Prix</TableCell>
               <TableCell>Quantité</TableCell>
@@ -321,7 +321,7 @@ export default function Articles() {
             {rows.map((row) => (
               <TableRow>
                 <TableCell>{row._id}</TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <img alt={row.nom} src={row.image} className={classes.image} ></img>
                 </TableCell>
                 <TableCell>{row.nom}</TableCell>

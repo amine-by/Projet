@@ -1,27 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Container, Button, Typography, Grid, Paper } from "@material-ui/core";
+import {
+  Container,
+  Button,
+  Typography,
+  Paper,
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
-  form: {
-    padding: theme.spacing(3),
-  },
   paper: {
     padding: theme.spacing(2),
     margin: "auto",
   },
-  actions: {
-    display: "flex",
-  },
-  expand: {
-    marginLeft: "auto",
-  },
+  image: {
+    maxHeight: 100,
+    maxWidth: 100
+  }
 }));
 
 export default function Panier() {
   const classes = useStyles();
   const [items, setItems] = useState([]);
+  const [total, setTotal] = useState(0);
   const supprimerItem = (_id) => {
     if (localStorage.getItem("jwt-cookie")) {
       axios
@@ -53,36 +60,62 @@ export default function Panier() {
   };
   const affichage = () => {
     return (
-      <Grid container spacing={1} direction="column">
-        {items.map((i) => (
-          <Grid item>
-            <Paper className={classes.paper}>
-              <Typography>{i.nom}</Typography>
-              <Typography>{i.quantite}</Typography>
-              <Typography>{i.prix}DT</Typography>
-              <Button
-                onClick={() => supprimerItem(i._id)}
-                className={classes.expand}
-              >
-                Supprimer
-              </Button>
-            </Paper>
-          </Grid>
-        ))}
-        <Grid className={classes.actions} item>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            className={classes.expand}
-          >
-            Commander
-          </Button>
-        </Grid>
-      </Grid>
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell colSpan={5}>
+                <Typography color="primary" component="h1">
+                  Panier
+                </Typography>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {items.map((item) => (
+              <TableRow>
+                <TableCell align="left">
+                  <img
+                    alt={item.nom}
+                    src={item.image}
+                    className={classes.image}
+                  ></img>
+                </TableCell>
+                <TableCell align="left">{item.nom}</TableCell>
+                <TableCell align="center">{item.prix} DT</TableCell>
+                <TableCell align="right">x {item.quantite}</TableCell>
+                <TableCell align="right">
+                  <Button
+                    color="secondary"
+                    onClick={() => {
+                      supprimerItem(item._id);
+                    }}
+                  >
+                    Supprimer
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow>
+              <TableCell align="left">
+                <Typography>
+                  Total:
+                  {total} DT
+                </Typography>
+              </TableCell>
+              <TableCell colSpan={4} align="left">
+                <Button color="primary" type="submit" variant="contained">
+                  Commander
+                </Button>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   };
   useEffect(() => {
+    setTotal(0);
     if (localStorage.getItem("jwt-cookie")) {
       axios
         .post(
@@ -98,7 +131,10 @@ export default function Panier() {
           resultat.data.forEach((d) => {
             axios
               .get("http://localhost:4000/articles/recherche/" + d._id)
-              .then((resultat) =>
+              .then((resultat) => {
+                resultat.data.image =
+                  "data:image/jpeg;base64," +
+                  new Buffer(resultat.data.image.data.data).toString("base64");
                 setItems((items) => [
                   ...items,
                   {
@@ -106,9 +142,11 @@ export default function Panier() {
                     nom: resultat.data.nom,
                     quantite: d.quantite,
                     prix: resultat.data.prix,
+                    image: resultat.data.image,
                   },
-                ])
-              );
+                ]);
+                setTotal((t) => t + resultat.data.prix * d.quantite);
+              });
           });
         });
     } else if (localStorage.getItem("cart-cookie")) {
@@ -116,7 +154,7 @@ export default function Panier() {
       resultat.forEach((d) => {
         axios
           .get("http://localhost:4000/articles/recherche/" + d._id)
-          .then((resultat) =>
+          .then((resultat) => {
             setItems((items) => [
               ...items,
               {
@@ -125,8 +163,9 @@ export default function Panier() {
                 quantite: d.quantite,
                 prix: resultat.data.prix,
               },
-            ])
-          );
+            ]);
+            setTotal((t) => t + resultat.data.prix * d.quantite);
+          });
       });
     }
   }, []);
@@ -140,7 +179,7 @@ export default function Panier() {
 
   return (
     <Container component="main">
-      <form onSubmit={handleSubmit} noValidate className={classes.form}>
+      <form onSubmit={handleSubmit} noValidate>
         {items.length === 0 ? panierVide() : affichage()}
       </form>
     </Container>

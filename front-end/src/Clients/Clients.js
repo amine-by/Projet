@@ -14,20 +14,30 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  FormControl,
+  FormLabel,
+  FormControlLabel,
+  RadioGroup,
+  Radio,
 } from "@material-ui/core";
 import axios from "axios";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   table: {
     minWidth: 650,
   },
-});
+  formcontrol: {
+    margin: theme.spacing(1),
+  },
+}));
 
 export default function Clients(props) {
   const [id, setId] = useState("");
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [type, setType] = useState("");
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -48,6 +58,14 @@ export default function Clients(props) {
               setNom(row.nom);
               setPrenom(row.prenom);
               setEmail(row.email);
+              setTelephone(row.telephone);
+              setType((t) =>
+                row.administrateur
+                  ? "Administrateur"
+                  : row.moderateur
+                  ? "Moderateur"
+                  : "Client"
+              );
             }}
           >
             Modifier
@@ -98,7 +116,10 @@ export default function Clients(props) {
               nom: r.nom,
               prenom: r.prenom,
               email: r.email,
+              telephone: r.telephone,
               cree: r.cree,
+              administrateur: r.administrateur,
+              moderateur: r.moderateur,
             },
           ]);
         });
@@ -159,6 +180,44 @@ export default function Clients(props) {
             name="email"
             autoComplete="email"
           />
+          <TextField
+            value={telephone}
+            onChange={(event) => setTelephone(event.target.value)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="telephone"
+            label="Téléphone"
+            name="telephone"
+            autoComplete="telephone"
+          />
+          <FormControl className={classes.formcontrol}>
+            <FormLabel>Type</FormLabel>
+            <RadioGroup
+              row
+              defaultValue={type}
+              onChange={(event) => {
+                setType(event.target.value);
+              }}
+            >
+              <FormControlLabel
+                value="Administrateur"
+                control={<Radio />}
+                label="Administrateur"
+              />
+              <FormControlLabel
+                value="Moderateur"
+                control={<Radio />}
+                label="Moderateur"
+              />
+              <FormControlLabel
+                value="Client"
+                control={<Radio />}
+                label="Client"
+              />
+            </RadioGroup>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button
@@ -172,6 +231,10 @@ export default function Clients(props) {
                     nom: nom,
                     prenom: prenom,
                     email: email,
+                    telephone: telephone,
+                    administrateur: type === "Administrateur",
+                    moderateur:
+                      type === "Administrateur" || type === "Moderateur",
                   },
                   {
                     headers: {
@@ -207,6 +270,8 @@ export default function Clients(props) {
               <TableCell>Nom</TableCell>
               <TableCell>Prenom</TableCell>
               <TableCell>E-mail</TableCell>
+              <TableCell>Téléphone</TableCell>
+              <TableCell>Type</TableCell>
               <TableCell>Date de création</TableCell>
               {tableHeadActions()}
             </TableRow>
@@ -218,6 +283,16 @@ export default function Clients(props) {
                 <TableCell>{row.nom}</TableCell>
                 <TableCell>{row.prenom}</TableCell>
                 <TableCell>{row.email}</TableCell>
+                <TableCell>{row.telephone}</TableCell>
+                <TableCell>
+                  {row.administrateur ? (
+                    <div>Administrateur</div>
+                  ) : row.moderateur ? (
+                    <div>Moderateur</div>
+                  ) : (
+                    <div>Client</div>
+                  )}
+                </TableCell>
                 <TableCell>{row.cree}</TableCell>
                 {tableBodyActions(row)}
               </TableRow>

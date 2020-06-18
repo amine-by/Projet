@@ -56,12 +56,20 @@ router.post("/getclients", verifcationJWT, async (request, response) => {
     else {
       const utilisateur = await Client.findOne(
         { _id: data._id },
-        { _id: 0, moderateur: 1, administrateur: 1 }
+        { _id: 0, moderateur: 1 }
       );
-      if (utilisateur.moderateur || utilisateur.administrateur) {
+      if (utilisateur.moderateur) {
         Client.find(
           {},
-          { nom: 1, prenom: 1, email: 1, cree: 1 }
+          {
+            nom: 1,
+            prenom: 1,
+            email: 1,
+            administrateur: 1,
+            moderateur: 1,
+            telephone: 1,
+            cree: 1,
+          }
         ).then((resultat) => response.send(resultat));
       } else {
         response.sendStatus(403);
@@ -83,9 +91,14 @@ router.post("/modifierclient", verifcationJWT, async (request, response) => {
         const nom = request.body.nom;
         const prenom = request.body.prenom;
         const email = request.body.email;
+        const telephone = request.body.telephone;
+        const administrateur = request.body.administrateur;
+        const moderateur = request.body.moderateur;
         Client.updateOne(
           { _id: id },
-          { $set: { nom, prenom, email } }
+          {
+            $set: { nom, prenom, email, telephone, administrateur, moderateur },
+          }
         ).then(() => response.send("succes"));
       } else response.sendStatus(403);
     }

@@ -11,12 +11,12 @@ import {
   FormControl,
   GridList,
   Paper,
-  Link
+  Link,
 } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: theme.spacing(3,3,3,1)
+    margin: theme.spacing(3, 3, 3, 1),
   },
   Box: {
     margin: theme.spacing(1),
@@ -24,30 +24,30 @@ const useStyles = makeStyles(theme => ({
   },
   Text: {
     margin: theme.spacing(0, 1),
-    textAlign: "center"
+    textAlign: "center",
   },
   image: {
-    maxWidth:195,
+    maxWidth: 195,
     height: 125,
     display: "block",
-    margin: "auto"
-  }
+    margin: "auto",
+  },
 }));
 
 export default function Acceuil() {
   const classes = useStyles();
   const [data, setData] = useState([]);
 
-  const handleData = value => {
+  const handleData = (value) => {
     axios
       .post("http://localhost:4000/articles/recherche", {
-        prix: value
+        prix: value,
       })
-      .then(resultat => {
+      .then((resultat) => {
         resultat.data.map((r) => {
-          return r.image =
+          return (r.image =
             "data:image/jpeg;base64," +
-            new Buffer(r.image.data.data).toString("base64");
+            new Buffer(r.image.data.data).toString("base64"));
         });
         setData(resultat.data);
       });
@@ -64,7 +64,7 @@ export default function Acceuil() {
           <FormLabel>Prix</FormLabel>
           <RadioGroup
             defaultValue={"Tout"}
-            onChange={e => {
+            onChange={(e) => {
               handleData(e.target.value);
             }}
           >
@@ -94,11 +94,10 @@ export default function Acceuil() {
       </Grid>
       <Grid item className={classes.formControl} xs={true}>
         <GridList cols={false}>
-          {data.map(d => (
-            <Paper
-              className={classes.Box}
-            >
-              <img alt={d.nom} src={d.image} className={classes.image}></img>
+          {data.map((d) => (
+            <Paper className={classes.Box}>
+              <img alt={d.nom} src={d.image} className={classes.image}>
+              </img>
               <Typography className={classes.Text} noWrap="true">
                 <Link href={"/Article/" + d._id}> {d.nom} </Link>
               </Typography>
