@@ -16,13 +16,18 @@ import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
+    maxWidth: 750,
     padding: theme.spacing(2),
     margin: "auto",
   },
   image: {
     maxHeight: 100,
-    maxWidth: 100
-  }
+    maxWidth: 100,
+  },
+  table: {
+    maxWidth: 750,
+    margin: "auto",
+  },
 }));
 
 export default function Panier() {
@@ -60,7 +65,7 @@ export default function Panier() {
   };
   const affichage = () => {
     return (
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} className={classes.table}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -74,17 +79,17 @@ export default function Panier() {
           <TableBody>
             {items.map((item) => (
               <TableRow>
-                <TableCell align="left">
+                <TableCell align="center">
                   <img
                     alt={item.nom}
                     src={item.image}
                     className={classes.image}
                   ></img>
                 </TableCell>
-                <TableCell align="left">{item.nom}</TableCell>
+                <TableCell align="center">{item.nom}</TableCell>
                 <TableCell align="center">{item.prix} DT</TableCell>
-                <TableCell align="right">x {item.quantite}</TableCell>
-                <TableCell align="right">
+                <TableCell align="center">x{item.quantite}</TableCell>
+                <TableCell align="center">
                   <Button
                     color="secondary"
                     onClick={() => {
@@ -97,13 +102,13 @@ export default function Panier() {
               </TableRow>
             ))}
             <TableRow>
-              <TableCell align="left">
+              <TableCell colSpan={4} align="left">
                 <Typography>
                   Total:
                   {total} DT
                 </Typography>
               </TableCell>
-              <TableCell colSpan={4} align="left">
+              <TableCell align="right">
                 <Button color="primary" type="submit" variant="contained">
                   Commander
                 </Button>
@@ -180,7 +185,7 @@ export default function Panier() {
   return (
     <Container component="main">
       <form onSubmit={handleSubmit} noValidate>
-        {items.length === 0 ? panierVide() : affichage()}
+        {items.length === 0 ? panierVide() :  affichage()}
       </form>
     </Container>
   );
