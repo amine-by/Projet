@@ -22,9 +22,15 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
+    maxWidth: 250
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  image: {
+    maxWidth: 1000,
+    maxHeight: 500,
+    marginTop: theme.spacing(4),
   },
 }));
 
@@ -34,7 +40,6 @@ export default function Article() {
   const [data, setData] = useState("");
   const [quantites, setQuantites] = useState([]);
   const [alert, setAlert] = useState("");
-
   const [quantite, setQuantite] = useState("");
 
   const handleSubmit = (event) => {
@@ -104,10 +109,36 @@ export default function Article() {
         }
       });
   }, []);
+
+  const Couleur = () => {
+    if (data.couleur !== "")
+      return (
+        <Typography variant="h6" className={classes.spacing}>
+          Couleur: {data.couleur}
+        </Typography>
+      );
+  };
+
+  const Taille = () => {
+    if (data.taille !== "")
+      return (
+        <Typography variant="h6" className={classes.spacing}>
+          Taille: {data.taille}
+        </Typography>
+      );
+  };
+
+  const Description = () => {
+    if (data.description !== "")
+      return (
+        <Typography variant="body2" className={classes.spacing}>{data.description}</Typography>
+      );
+  };
+
   return (
     <Grid container direction="row">
       <Grid item>
-        <img alt={data.nom} src={data.image}></img>
+        <img alt={data.nom} src={data.image} className={classes.image}></img>
       </Grid>
       <Grid item>
         <div className={classes.paper}>
@@ -122,10 +153,14 @@ export default function Article() {
             >
               {data.prix} DT
             </Typography>
+            {Couleur()}
+            {Taille()}
+            {Description()}
             {alert}
             <Autocomplete
               className={classes.spacing}
               id="combo-box-demo"
+              disableClearable ="true"
               onInputChange={(event, value) => setQuantite(value)}
               options={quantites}
               getOptionLabel={(option) => option.title}

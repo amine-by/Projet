@@ -22,9 +22,9 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
   },
-  image:{
-  maxHeight: 75,
-  maxWidth: 75
+  image: {
+    maxHeight: 75,
+    maxWidth: 75,
   },
 
   btnSpacing: {
@@ -56,9 +56,9 @@ export default function Articles() {
       .post("http://localhost:4000/articles/recherche", {})
       .then((resultat) => {
         resultat.data.map((r) => {
-          return r.image =
+          return (r.image =
             "data:image/jpeg;base64," +
-            new Buffer(r.image.data.data).toString("base64");
+            new Buffer(r.image.data.data).toString("base64"));
         });
         setRows(resultat.data);
       });
@@ -187,7 +187,6 @@ export default function Articles() {
             autoComplete="quantite"
           />
           <Autocomplete
-            className={classes.spacing}
             defaultValue={{ title: categorie }}
             id="categorie"
             onInputChange={(event, value) => setCategorie(value)}
@@ -203,8 +202,7 @@ export default function Articles() {
             )}
           />
           <Autocomplete
-            className={classes.spacing}
-            id="categorie"
+            id="marque"
             onInputChange={(event, value) => setMarque(value)}
             defaultValue={{ title: marque }}
             options={marques}
@@ -322,7 +320,11 @@ export default function Articles() {
               <TableRow>
                 <TableCell>{row._id}</TableCell>
                 <TableCell align="center">
-                  <img alt={row.nom} src={row.image} className={classes.image} ></img>
+                  <img
+                    alt={row.nom}
+                    src={row.image}
+                    className={classes.image}
+                  ></img>
                 </TableCell>
                 <TableCell>{row.nom}</TableCell>
                 <TableCell>{row.prix}</TableCell>

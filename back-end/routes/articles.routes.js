@@ -90,31 +90,127 @@ router.post(
 
 router.route("/recherche").post(async (request, response) => {
   const prix = request.body.prix;
+  let categorie = request.body.categorie;
+  let marque = request.body.marque;
   let article;
-  switch (prix) {
-    case "de 0 à 25":
-      article = await Article.find(
-        { prix: { $lte: 25 } }
-      );
-      break;
-    case "de 25 à 50":
-      article = await Article.find(
-        { prix: { $lte: 50, $gte: 25 } }
-      );
-      break;
-    case "de 50 à 100":
-      article = await Article.find(
-        { prix: { $lte: 100, $gte: 50 } }
-      );
-      break;
-    case "plus que 100":
-      article = await Article.find(
-        { prix: { $gte: 100 } }
-      );
-      break;
-    default:
-      article = await Article.find();
-      break;
+
+  if (categorie === "Tout" || categorie === undefined) categorie = "";
+  if (marque === "Tout" || marque === undefined) marque = "";
+
+  if (categorie === "") {
+    if (marque === "")
+      switch (prix) {
+        case "de 0 à 25":
+          article = await Article.find({
+            prix: { $lte: 25 },
+          });
+          break;
+        case "de 25 à 50":
+          article = await Article.find({
+            prix: { $lte: 50, $gte: 25 },
+          });
+          break;
+        case "de 50 à 100":
+          article = await Article.find({
+            prix: { $lte: 100, $gte: 50 },
+          });
+          break;
+        case "plus que 100":
+          article = await Article.find({ prix: { $gte: 100 } });
+          break;
+        default:
+          article = await Article.find();
+          break;
+      }
+    else
+      switch (prix) {
+        case "de 0 à 25":
+          article = await Article.find({
+            prix: { $lte: 25 },
+            marque,
+          });
+          break;
+        case "de 25 à 50":
+          article = await Article.find({
+            prix: { $lte: 50, $gte: 25 },
+            marque,
+          });
+          break;
+        case "de 50 à 100":
+          article = await Article.find({
+            prix: { $lte: 100, $gte: 50 },
+            marque,
+          });
+          break;
+        case "plus que 100":
+          article = await Article.find({ prix: { $gte: 100 } }, marque);
+          break;
+        default:
+          article = await Article.find({ marque });
+          break;
+      }
+  } else {
+    if (marque === "")
+      switch (prix) {
+        case "de 0 à 25":
+          article = await Article.find({
+            prix: { $lte: 25 },
+            categorie,
+          });
+          break;
+        case "de 25 à 50":
+          article = await Article.find({
+            prix: { $lte: 50, $gte: 25 },
+            categorie,
+          });
+          break;
+        case "de 50 à 100":
+          article = await Article.find({
+            prix: { $lte: 100, $gte: 50 },
+            categorie,
+          });
+          break;
+        case "plus que 100":
+          article = await Article.find({ prix: { $gte: 100 } , categorie});
+          break;
+        default:
+          article = await Article.find({ categorie });
+          break;
+      }
+    else
+      switch (prix) {
+        case "de 0 à 25":
+          article = await Article.find({
+            prix: { $lte: 25 },
+            categorie,
+            marque,
+          });
+          break;
+        case "de 25 à 50":
+          article = await Article.find({
+            prix: { $lte: 50, $gte: 25 },
+            categorie,
+            marque,
+          });
+          break;
+        case "de 50 à 100":
+          article = await Article.find({
+            prix: { $lte: 100, $gte: 50 },
+            categorie,
+            marque,
+          });
+          break;
+        case "plus que 100":
+          article = await Article.find({
+            prix: { $gte: 100 } ,
+            categorie,
+            marque,
+          });
+          break;
+        default:
+          article = await Article.find({ categorie, marque });
+          break;
+      }
   }
   response.send(article);
 });
