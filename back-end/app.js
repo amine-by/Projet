@@ -11,6 +11,7 @@ const clients = require("./routes/clients.routes");
 const articles = require("./routes/articles.routes");
 const categories = require("./routes/categories.routes");
 const marques = require("./routes/marques.routes");
+const commandes = require("./routes/commandes.routes")
 
 const app = express();
 const port = 4000;
@@ -23,6 +24,7 @@ app.use("/clients", clients);
 app.use("/articles", articles);
 app.use("/categories", categories);
 app.use("/marques", marques);
+app.use("/commandes", commandes);
 
 app.get("/", (request, response) => {
   response.send("ça marche!");

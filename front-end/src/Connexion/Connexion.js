@@ -10,24 +10,24 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import axios from "axios";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 export default function Connexion() {
@@ -35,7 +35,7 @@ export default function Connexion() {
   const [passe, setPasse] = useState("");
   const [alert, setAlert] = useState("");
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (email === "" || passe === "") {
       setAlert(() => (
@@ -48,9 +48,9 @@ export default function Connexion() {
       axios
         .post("http://localhost:4000/clients/authentification", {
           email: email,
-          passe: passe
+          passe: passe,
         })
-        .then(resultat => {
+        .then((resultat) => {
           if (!(resultat.data === "Email ou Mot de passe non valide")) {
             localStorage.setItem("jwt-cookie", resultat.data);
           } else {
@@ -70,15 +70,14 @@ export default function Connexion() {
               JSON.parse(localStorage.getItem("cart-cookie")),
               {
                 headers: {
-                  Authorization: "bearer " + localStorage.getItem("jwt-cookie")
-                }
+                  Authorization: "bearer " + localStorage.getItem("jwt-cookie"),
+                },
               }
             );
         })
         .then(() => {
           if (localStorage.getItem("jwt-cookie")) {
-            if (localStorage.getItem("jwt-cookie"))
-              localStorage.removeItem("cart-cookie");
+            localStorage.removeItem("cart-cookie");
             window.location = "/";
           }
         });
@@ -101,7 +100,7 @@ export default function Connexion() {
           {alert}
           <TextField
             value={email}
-            onChange={event => setEmail(event.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             variant="outlined"
             margin="normal"
             required
@@ -114,7 +113,7 @@ export default function Connexion() {
           />
           <TextField
             value={passe}
-            onChange={event => setPasse(event.target.value)}
+            onChange={(event) => setPasse(event.target.value)}
             variant="outlined"
             margin="normal"
             required
