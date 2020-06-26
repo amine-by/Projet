@@ -39,7 +39,6 @@ export default function Panier() {
   const classes = useStyles();
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
-  const [description, setDescription] = useState("");
   const [adresse, setAdresse] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -161,21 +160,6 @@ export default function Panier() {
               name="adresse"
               autoComplete="adresse"
             />
-            <TextField
-              value={description}
-              multiline="true"
-              onChange={(event) => {
-                setDescription(event.target.value);
-              }}
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="description"
-              label="Description"
-              name="description"
-              autoComplete="description"
-            />
           </DialogContent>
           <DialogActions>
             <Button
@@ -186,7 +170,6 @@ export default function Panier() {
                     "http://localhost:4000/commandes/ajouter",
                     {
                       adresse,
-                      description,
                     },
                     {
                       headers: {
@@ -196,9 +179,8 @@ export default function Panier() {
                     }
                   )
                   .then((resultat) => {
-                    console.log(resultat);
-                    setOpen(false);
-                    refreshItems();
+                    if (resultat.data === "Commande ajouté")
+                      window.location = "/Historique";
                   });
               }}
             >

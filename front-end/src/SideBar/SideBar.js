@@ -15,6 +15,7 @@ import {
   ChevronRightRounded,
   PeopleAltRounded,
   ShoppingCartRounded,
+  ShoppingBasketRounded
 } from "@material-ui/icons";
 
 export default function SideBar(props) {
@@ -51,7 +52,18 @@ export default function SideBar(props) {
           </ListItemIcon>
           <ListItemText primary="Clients" />
         </ListItem>
-
+        <ListItem
+          button
+          key="Commandes"
+          onClick={() => {
+            window.location = "/Commandes";
+          }}
+        >
+          <ListItemIcon>
+            <ShoppingCartRounded />
+          </ListItemIcon>
+          <ListItemText primary="Commandes" />
+        </ListItem>
         <ListItem
           button
           key="Articles"
@@ -60,7 +72,7 @@ export default function SideBar(props) {
           }}
         >
           <ListItemIcon>
-            <ShoppingCartRounded />
+            <ShoppingBasketRounded />
           </ListItemIcon>
           <ListItemText primary="Articles" />
         </ListItem>

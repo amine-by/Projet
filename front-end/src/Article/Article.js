@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
-    maxWidth: 250
+    maxWidth: 250,
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -99,14 +99,15 @@ export default function Article() {
           "data:image/jpeg;base64," +
           new Buffer(resultat.data.image.data.data).toString("base64");
         setData(resultat.data);
-        for (let i = 1; i <= resultat.data.quantite; i++) {
-          setQuantites((quantites) => [
-            ...quantites,
-            {
-              title: i.toString(),
-            },
-          ]);
-        }
+        if (resultat.data.quantite)
+          for (let i = 1; i <= resultat.data.quantite; i++) {
+            setQuantites((quantites) => [
+              ...quantites,
+              {
+                title: i.toString(),
+              },
+            ]);
+          }
       });
   }, []);
 
@@ -131,7 +132,43 @@ export default function Article() {
   const Description = () => {
     if (data.description !== "")
       return (
-        <Typography variant="body2" className={classes.spacing}>{data.description}</Typography>
+        <Typography variant="body2" className={classes.spacing}>
+          {data.description}
+        </Typography>
+      );
+  };
+
+  const Quantite = () => {
+    if (quantites.length > 0) {
+      return (
+        <div>
+          <Autocomplete
+            className={classes.spacing}
+            id="combo-box-demo"
+            disableClearable="true"
+            onInputChange={(event, value) => setQuantite(value)}
+            options={quantites}
+            getOptionLabel={(option) => option.title}
+            renderInput={(params) => (
+              <TextField {...params} label="quantité" variant="outlined" />
+            )}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            fullWidth
+          >
+            Ajouter au panier
+          </Button>
+        </div>
+      );
+    } else
+      return (
+        <Typography variant="h6" color="secondary" >
+          Non Disponible
+        </Typography>
       );
   };
 
@@ -157,26 +194,7 @@ export default function Article() {
             {Taille()}
             {Description()}
             {alert}
-            <Autocomplete
-              className={classes.spacing}
-              id="combo-box-demo"
-              disableClearable ="true"
-              onInputChange={(event, value) => setQuantite(value)}
-              options={quantites}
-              getOptionLabel={(option) => option.title}
-              renderInput={(params) => (
-                <TextField {...params} label="quantité" variant="outlined" />
-              )}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              fullWidth
-            >
-              Ajouter au panier
-            </Button>
+            {Quantite()}
           </form>
         </div>
       </Grid>

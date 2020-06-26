@@ -5,6 +5,7 @@ const Client = require("../models/client.model");
 const Article = require("../models/article.model");
 
 const verifcationJWT = require("../verification/verification");
+const { response } = require("express");
 
 const upload = multer({
   limits: {
@@ -172,7 +173,7 @@ router.route("/recherche").post(async (request, response) => {
           });
           break;
         case "plus que 100":
-          article = await Article.find({ prix: { $gte: 100 } , categorie});
+          article = await Article.find({ prix: { $gte: 100 }, categorie });
           break;
         default:
           article = await Article.find({ categorie });
@@ -203,7 +204,7 @@ router.route("/recherche").post(async (request, response) => {
           break;
         case "plus que 100":
           article = await Article.find({
-            prix: { $gte: 100 } ,
+            prix: { $gte: 100 },
             categorie,
             marque,
           });
