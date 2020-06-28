@@ -133,7 +133,7 @@ export default function Articles() {
         }}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Ajouter Article</DialogTitle>
+        <DialogTitle id="form-dialog-title">{id === "" ? <div>Ajouter Article</div> : <div>Modifier Article</div>}</DialogTitle>
         <DialogContent>
           <TextField
             type="file"
