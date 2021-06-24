@@ -143,7 +143,7 @@ export default function NavBar(props) {
             }}
             color="inherit"
           >
-            Commerce
+            E-Commerce
           </Button>
           <div className={props.classes.title}></div>
           <Button

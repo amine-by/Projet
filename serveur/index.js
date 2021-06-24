@@ -3,15 +3,16 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const path = require("path");
 
 dotenv.config();
 
-//imports routes
-const clients = require("./routes/clients.routes");
-const articles = require("./routes/articles.routes");
-const categories = require("./routes/categories.routes");
-const marques = require("./routes/marques.routes");
-const commandes = require("./routes/commandes.routes")
+//imports controllers
+const clients = require("./controllers/clients.controllers");
+const articles = require("./controllers/articles.controllers");
+const categories = require("./controllers/categories.controllers");
+const marques = require("./controllers/marques.controllers");
+const commandes = require("./controllers/commandes.controllers")
 
 const app = express();
 const port = 4000;
@@ -26,6 +27,12 @@ app.use("/categories", categories);
 app.use("/marques", marques);
 app.use("/commandes", commandes);
 
+app.use(express.static(path.join(__dirname, "vue")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "vue", "index.html"))
+})
+
 //connection à la base de donnée MongoDB
 const conn = mongoose.connect(uri, {
   useNewUrlParser: true,
@@ -33,7 +40,6 @@ const conn = mongoose.connect(uri, {
   useUnifiedTopology: true,
 });
 
-//
 mongoose.connection.once("open", () => {
   console.log("connecté à la base MongoDB");
 });
