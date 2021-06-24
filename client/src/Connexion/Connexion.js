@@ -66,7 +66,7 @@ export default function Connexion() {
             localStorage.getItem("jwt-cookie")
           )
             axios.post(
-              "http://localhost:4000/clients/majpanier",
+              "/clients/majpanier",
               JSON.parse(localStorage.getItem("cart-cookie")),
               {
                 headers: {
